@@ -1,7 +1,7 @@
 luksor
 ======
 
-simple luks open cloese script
+simple luks open close script
 
 
 This zsh script prints a list of numbered luks volumes and opens a chosen

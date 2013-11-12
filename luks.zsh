@@ -50,6 +50,8 @@ echo $a | while read i;do
 		if [ "$m" != "" ]; then
 			echo -en "\e[1;32m"
 			endev[$j]=$m
+		else
+			m=$(cat /sys/block/$(basename $i)/device/vendor)
 		fi
 		echo -e "\t$j  $i\t\t$m\e[0m"
 		m=""
