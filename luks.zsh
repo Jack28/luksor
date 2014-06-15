@@ -41,17 +41,20 @@ fi
 j=0
 dev=()
 endev=()
-# walk thru devices, check if mounted, echo
+# device vendor
+dedev=()
+# walk thru devices, check if open, echo
 echo $a | while read i;do
 	cryptsetup isLuks $i
 	if [ "$?" -ne "1" ];then
 		j=$((j+1))	
-		m=`echo $ldev|grep $i|grep -oe "/dev/mapper/[a-z0-9]*"`
+		m=`echo $ldev|grep $i|grep -oe "/dev/mapper/[A-z0-9]*"`
 		if [ "$m" != "" ]; then
 			echo -en "\e[1;32m"
 			endev[$j]=$m
 		else
-			m=$(cat /sys/block/$(basename $i)/device/vendor)
+			m=$(cat /sys/block/$(basename $i)/device/vendor|grep -o "[A-z]*") > /dev/null 2>&1
+			dedev[$j]=$m
 		fi
 		echo -e "\t$j  $i\t\t$m\e[0m"
 		m=""
@@ -76,12 +79,11 @@ fi
 # use pmount to mount or unmount
 if [ "$endev[$b]" = "" ];then
 	num=`ls /dev/mapper/* | grep "lusb" | wc -l`
-	echo "cryptsetup luksOpen $dev[$b] lusb$num";cryptsetup luksOpen $dev[$b] lusb$num
+	echo "cryptsetup luksOpen $dev[$b] lusb$num$dedev[$b]";cryptsetup luksOpen $dev[$b] lusb$num$dedev[$b]
 else
 	echo "cryptsetup luksClose $endev[$b]";cryptsetup luksClose $endev[$b]
 fi	
 }
-
 
 
 if [ ! "$1" = "" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
